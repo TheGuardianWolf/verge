@@ -8,7 +8,7 @@ import { action } from '@storybook/addon-actions';
 export const GraphNode = () => (
   <Stage width={window.innerWidth} height={window.innerHeight}>
     {/* <Layer> */}
-      <GitGraphNode x={0} y={0} fill="blue"></GitGraphNode>
+      <GitGraphNode x={0} y={0} fill="yellow"></GitGraphNode>
     {/* </Layer> */}
   </Stage>
 );

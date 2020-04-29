@@ -16,8 +16,15 @@ function GitGraphNode(props: any) {
         x={point.x}
         y={point.y}
         draggable
-        radius={50}
+        radius={12}
         fill={props.fill}
+        stroke='blue'
+        strokeWidth={3}
+        opacity={isDragging ? 0.5 : 1}
+        scale={{
+          x: isDragging ? 1.1 : 1, 
+          y: isDragging ? 1.1 : 1
+        }}
         onDragStart={() => {
           setIsDragging(true);
         }}
@@ -39,8 +46,10 @@ function renderStableNode(x: number, y: number, fill: any) {
     <Circle
       x={x}
       y={y}
-      radius={50}
+      radius={12}
       fill={fill}
+      stroke='blue'
+      strokeWidth={3}
   />
   )
 }
