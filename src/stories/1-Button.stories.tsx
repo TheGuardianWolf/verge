@@ -1,6 +1,6 @@
+import { Button } from '@storybook/react/demo';
 import React from 'react';
 import { action } from '@storybook/addon-actions';
-import { Button } from '@storybook/react/demo';
 
 export default {
   title: 'Button',
@@ -16,3 +16,5 @@ export const Emoji = () => (
     </span>
   </Button>
 );
+
+export const Test = () => <div style={{width: '200px', height: '200px', backgroundColor: 'black'}}></div>;
