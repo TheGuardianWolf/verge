@@ -8,10 +8,11 @@ function GitGraphNode(props: any) {
 
   const [point, setPoint] = useState({x: props.x, y: props.y})
   const [isDragging, setIsDragging] = useState(false)
-  const [originalPoint, setOriginalPoint] = useState({x: props.x, y: props.y})
+  const [isMouseEnter, setIsMouseEnter] = useState(false)
 
   return (
     <Layer>
+      {isDragging ? renderStableNode(point.x, point.y, props.fill, isDragging) : null}
       <Circle
         x={point.x}
         y={point.y}
@@ -22,8 +23,8 @@ function GitGraphNode(props: any) {
         strokeWidth={3}
         opacity={isDragging ? 0.5 : 1}
         scale={{
-          x: isDragging ? 1.1 : 1, 
-          y: isDragging ? 1.1 : 1
+          x: isMouseEnter ? 1.2 : 1, 
+          y: isMouseEnter ? 1.2 : 1
         }}
         onDragStart={() => {
           setIsDragging(true);
@@ -35,13 +36,18 @@ function GitGraphNode(props: any) {
           })
           setIsDragging(false);
         }}
+        onMouseEnter={() => {
+          setIsMouseEnter(true);
+        }}
+        onMouseLeave={() => {
+          setIsMouseEnter(false);
+        }}
       />
-      {isDragging ? renderStableNode(point.x, point.y, props.fill) : null}
     </Layer>
   );
 }
 
-function renderStableNode(x: number, y: number, fill: any) {
+function renderStableNode(x: number, y: number, fill: any, isDragging: boolean) {
   return (
     <Circle
       x={x}
@@ -50,6 +56,10 @@ function renderStableNode(x: number, y: number, fill: any) {
       fill={fill}
       stroke='blue'
       strokeWidth={3}
+      scale={{
+        x: isDragging ? 1.2 : 1, 
+        y: isDragging ? 1.2 : 1
+      }}
   />
   )
 }
