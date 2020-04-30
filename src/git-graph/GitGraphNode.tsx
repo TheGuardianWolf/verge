@@ -1,91 +1,72 @@
-import { Circle, Layer } from 'react-konva';
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 
-import Konva from 'konva';
+import { Circle } from 'konva/types/shapes/Circle';
+import ImageCircle from './ImageCircle';
+import { Layer } from 'react-konva';
 
-function GitGraphNode(props: any) {
-  const fillPatternX: number = -9;
-  const fillPatternY: number = -9;
-  const radius: number = 12;
-  const strokeWidth: number = 20;
-  const fillPatternScale: number = 18;
+const CIRCLE_SIZE = 18;
 
-  const [point, setPoint] = useState({x: props.x, y: props.y});
+export function GitGraphNode(props: any) {
+  const [point, setPoint] = useState({ x: props.x, y: props.y });
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseEnter, setIsMouseEnter] = useState(false);
-  const [fillImage, setFillImage] = useState<HTMLImageElement>();
+  const [fillImage, setFillImage] = useState<HTMLImageElement>(
+    new Image(CIRCLE_SIZE, CIRCLE_SIZE)
+  );
 
   useEffect(() => {
-    console.log('usingEffects' + props.url)
-    const image = new window.Image();
+    console.log('usingEffects' + props.url);
+    const image = new Image();
     image.onload = () => {
       setFillImage(image);
-    }
+    };
     image.src = props.url;
-  }, [props.url])
+  }, [props.url]);
 
-  function StableNode(props: any) {
-    return (
-      <Circle
-        x={props.x}
-        y={props.y}
-        radius={radius}
-        stroke='black'
-        strokeWidth={strokeWidth}
-        fillPatternImage = {props.patternImage}
-        fillPatternScaleY={fillPatternScale / (fillImage ? fillImage.height : 1)}
-        fillPatternScaleX={fillPatternScale / (fillImage ? fillImage.width : 1)}
-        fillPatternX={fillPatternX}
-        fillPatternY={fillPatternY}
-        fillPatternRepeat='no-repeat'
-        scale={{
-          x: props.isDragging ? 1.2 : 1, 
-          y: props.isDragging ? 1.2 : 1
-        }}
-    />
-    )
-  }
+  const createDragHandler = (drag: boolean) => (e: { target: Circle }) => {
+    if (!drag) {
+      console.log(e);
+      setPoint({
+        x: e.target.x(),
+        y: e.target.y(),
+      });
+    }
+    setIsDragging(drag);
+  };
+
+  const createHoveredHandler = (hovered: boolean) => () => {
+    setIsMouseEnter(hovered);
+  };
 
   return (
-    <Layer>
-      {isDragging ? <StableNode x={point.x} y={point.y} fill={props.fill} isDragging={isDragging} patternImage={fillImage}/> : null}
-      <Circle
+    <React.Fragment>
+      {isDragging && (
+        <ImageCircle
+          x={point.x}
+          y={point.y}
+          image={fillImage}
+          scale={{
+            x: isDragging ? 1.2 : 1,
+            y: isDragging ? 1.2 : 1,
+          }}
+        />
+      )}
+      <ImageCircle
         x={point.x}
         y={point.y}
+        image={fillImage}
         draggable
-        radius={radius}
-        stroke='black'
-        strokeWidth={strokeWidth}
         opacity={isDragging ? 0.5 : 1}
-        fillPatternImage = {fillImage}
-        fillPatternScaleY={fillPatternScale / (fillImage ? fillImage.height : 1)}
-        fillPatternScaleX={fillPatternScale / (fillImage ? fillImage.width : 1)}
-        fillPatternX={fillPatternX}
-        fillPatternY={fillPatternY}
-        fillPatternRepeat='no-repeat'
         scale={{
-          x: isMouseEnter ? 1.2 : 1, 
-          y: isMouseEnter ? 1.2 : 1
+          x: isMouseEnter ? 1.2 : 1,
+          y: isMouseEnter ? 1.2 : 1,
         }}
-        onDragStart={() => {
-          setIsDragging(true);
-        }}
-        onDragEnd={e => {
-          setPoint({
-            x: e.target.x(),
-            y: e.target.y()
-          })
-          setIsDragging(false);
-        }}
-        onMouseEnter={() => {
-          setIsMouseEnter(true);
-        }}
-        onMouseLeave={() => {
-          setIsMouseEnter(false);
-        }}
+        onDragStart={createDragHandler(true)}
+        onDragEnd={createDragHandler(false)}
+        onMouseEnter={createHoveredHandler(true)}
+        onMouseLeave={createHoveredHandler(false)}
       />
-    </Layer>
+    </React.Fragment>
   );
 }
 
