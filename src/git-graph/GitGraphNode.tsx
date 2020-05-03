@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-
 import { Circle } from 'konva/types/shapes/Circle';
 import ImageCircle from './ImageCircle';
 import { Layer } from 'react-konva';
 
 const CIRCLE_SIZE = 18;
 
-export function GitGraphNode(props: any) {
+type StableNodeProps = {
+  x: number;
+  y: number;
+  url: string
+};
+
+export function GitGraphNode(props: StableNodeProps) {
   const [point, setPoint] = useState({ x: props.x, y: props.y });
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseEnter, setIsMouseEnter] = useState(false);
