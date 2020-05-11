@@ -6,8 +6,9 @@ import _ from 'lodash';
 import Point from './GraphHelpers' 
 import { start } from 'repl';
 
-const horizontalDistance = 65;
-const verticalDistance = 45;
+const HORIZONTAL_DISTANCE = 65;
+const VERTICAL_DISTANCE = 45;
+const LINE_CURVATURE = 7;
 
 type Commit = {
   hash: string,
@@ -22,14 +23,14 @@ type GitGraphProps = {
   }
 };
 
-type pointBranches = {
+type pointCommitPair = {
   point: Point,
-  branches: string[],
+  commit: Commit,
 }
 
 
 export function GitGraph(props: GitGraphProps) {
-  const [nodePositions, setNodePositions] = useState<pointBranches[]>([]);
+  const [nodePositions, setNodePositions] = useState<pointCommitPair[]>([]);
 
   function generateGraph() {
     let verticalCounter = 0;
@@ -43,10 +44,10 @@ export function GitGraph(props: GitGraphProps) {
         branchesArray = branchesArray.concat(differenceArray);
       }
 
-      const posX = horizontalDistance * (branchesArray.findIndex(e => e === currentCommitBranches[0]) + 1);
-      const posY = verticalDistance * verticalCounter;
+      const posX = HORIZONTAL_DISTANCE * (branchesArray.findIndex(e => e === currentCommitBranches[0]) + 1);
+      const posY = VERTICAL_DISTANCE * verticalCounter;
       if (!nodePositions.find((e) => (e.point.x === posX && e.point.y === posY))) {
-        setNodePositions(nodePositions.concat({point: {x: posX, y: posY}, branches: currentCommitBranches}));
+        setNodePositions(nodePositions.concat({point: {x: posX, y: posY}, commit: props.commits[hash]}));
       }
 
       return (
@@ -62,31 +63,75 @@ export function GitGraph(props: GitGraphProps) {
   }
 
   function drawLines() {
+    console.log('WE IN');
     const renderArray = nodePositions.map(startNode => {
       let endNode;
-      const pointsArray: number[] = [];
-      pointsArray.push(startNode.point.x);
-      pointsArray.push(startNode.point.y);
 
-      //commit right below
-      endNode = [...nodePositions].reverse().find(e => e.point.x === startNode.point.x && e.point.y > startNode.point.y);
-      //diagonal
-      if (!endNode) {
-        endNode = [...nodePositions].reverse().find(e => e.point.x < startNode.point.x && e.point.y > startNode.point.y)
-      }
+      endNode = [...nodePositions].reverse().find(e => (_.intersection(e.commit.branch, startNode.commit.branch).length > 0 
+      && props.commitsById.indexOf(e.commit.hash) > props.commitsById.indexOf(startNode.commit.hash)));
   
-      if (endNode && _.intersection(endNode.branches, startNode.branches).length > 0) {
-        pointsArray.push(startNode.point.x);
-        pointsArray.push(endNode.point.y);
-        pointsArray.push(endNode.point.x);
-        pointsArray.push(endNode.point.y);
+      if(endNode) {
+        //straight
+        if (endNode.point.x === startNode.point.x) {
+          const pointsArray: number[] = [];
+          //start
+          pointsArray.push(startNode.point.x);
+          pointsArray.push(startNode.point.y);
+          pointsArray.push(endNode.point.x);
+          pointsArray.push(endNode.point.y);  
+          return (
+            <Line
+              stroke="black"
+              strokeWidth={2}
+              tension={0.2}
+              points={pointsArray}
+            />
+          )
+        }
+        //diagonal
+        else {
+          const verticalPointsArray: number[] = [];
+          const cornerPointsArray: number[] = [];
+          const horizontalPointsArray: number[] = [];
 
-        return (
-          <Line
-            stroke={'red'}
-            points={pointsArray}
-          />
-        )
+          verticalPointsArray.push(startNode.point.x);
+          verticalPointsArray.push(startNode.point.y);
+          verticalPointsArray.push(startNode.point.x);
+          verticalPointsArray.push(endNode.point.y - LINE_CURVATURE);
+
+          cornerPointsArray.push(startNode.point.x);
+          cornerPointsArray.push(endNode.point.y - LINE_CURVATURE);
+          cornerPointsArray.push(startNode.point.x - LINE_CURVATURE / 4);
+          cornerPointsArray.push(endNode.point.y - LINE_CURVATURE / 4);
+          cornerPointsArray.push(startNode.point.x - LINE_CURVATURE);
+          cornerPointsArray.push(endNode.point.y);
+
+          horizontalPointsArray.push(startNode.point.x - LINE_CURVATURE);
+          horizontalPointsArray.push(endNode.point.y);
+          horizontalPointsArray.push(endNode.point.x);
+          horizontalPointsArray.push(endNode.point.y);
+
+          return (
+            <React.Fragment>
+              <Line
+                stroke="black"
+                strokeWidth={2}
+                points={verticalPointsArray}
+              />
+              <Line
+                stroke="black"
+                strokeWidth={2}
+                tension={0.2}
+                points={cornerPointsArray}
+              />
+              <Line
+                stroke="black"
+                strokeWidth={2}
+                points={horizontalPointsArray}
+              />
+            </React.Fragment>
+          )
+        }
       }
     })
 

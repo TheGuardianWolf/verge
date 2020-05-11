@@ -6,6 +6,7 @@ import { CircleConfig } from 'konva/types/shapes/Circle';
 const CIRCLE_SIZE = 18;
 const CIRCLE_RADIUS = 12;
 const CIRCLE_BORDER = 20;
+const BACKGROUND_FILL = 'white';
 
 export default function ImageCircle(
   props: Omit<CircleConfig, 'radius'> & {
@@ -36,7 +37,7 @@ export default function ImageCircle(
     <React.Fragment>
       <Circle
         radius={CIRCLE_RADIUS}
-        fill="white"
+        fill={BACKGROUND_FILL}
         fillPatternRepeat="no-repeat"
         {...props}
       />
