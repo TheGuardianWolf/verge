@@ -33,15 +33,23 @@ export default function ImageCircle(
   );
 
   return (
-    <Circle
-      radius={CIRCLE_RADIUS}
-      stroke="black"
-      strokeWidth={CIRCLE_BORDER}
-      fillPatternImage={props.image}
-      fillPatternOffset={fillPatternOffset}
-      fillPatternScale={fillPatternScale}
-      fillPatternRepeat="no-repeat"
-      {...props}
-    />
+    <React.Fragment>
+      <Circle
+        radius={CIRCLE_RADIUS}
+        fill="white"
+        fillPatternRepeat="no-repeat"
+        {...props}
+      />
+      <Circle
+        radius={CIRCLE_RADIUS}
+        stroke="black"
+        strokeWidth={CIRCLE_BORDER}
+        fillPatternImage={props.image}
+        fillPatternOffset={fillPatternOffset}
+        fillPatternScale={fillPatternScale}
+        fillPatternRepeat="no-repeat"
+        {...props}
+      />
+    </React.Fragment>
   );
 }
