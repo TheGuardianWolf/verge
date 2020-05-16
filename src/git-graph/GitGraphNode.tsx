@@ -4,11 +4,13 @@ import ImageCircle from './ImageCircle';
 import { Layer } from 'react-konva';
 
 const CIRCLE_SIZE = 18;
+const FOCUS_SCALE_FACTOR = 1.2;
+const FOCUS_OPACITY = 0.5;
 
 type StableNodeProps = {
   x: number;
   y: number;
-  url: string
+  url: string;
 };
 
 export function GitGraphNode(props: StableNodeProps) {
@@ -51,8 +53,8 @@ export function GitGraphNode(props: StableNodeProps) {
           y={point.y}
           image={fillImage}
           scale={{
-            x: isDragging ? 1.2 : 1,
-            y: isDragging ? 1.2 : 1,
+            x: isDragging ? FOCUS_SCALE_FACTOR : 1,
+            y: isDragging ? FOCUS_SCALE_FACTOR : 1,
           }}
         />
       )}
@@ -61,10 +63,10 @@ export function GitGraphNode(props: StableNodeProps) {
         y={point.y}
         image={fillImage}
         draggable
-        opacity={isDragging ? 0.5 : 1}
+        opacity={isDragging ? FOCUS_OPACITY : 1}
         scale={{
-          x: isMouseEnter ? 1.2 : 1,
-          y: isMouseEnter ? 1.2 : 1,
+          x: isMouseEnter ? FOCUS_SCALE_FACTOR : 1,
+          y: isMouseEnter ? FOCUS_SCALE_FACTOR : 1,
         }}
         onDragStart={createDragHandler(true)}
         onDragEnd={createDragHandler(false)}
