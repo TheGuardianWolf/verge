@@ -1,10 +1,11 @@
 import { Layer, Line, Stage } from 'react-konva';
 import React, { useEffect, useState } from 'react';
+import { getCommitsAsync, selectCommits } from '../features/git/slice';
+import { useDispatch, useSelector } from 'react-redux';
 
 import GitGraphNode from './GitGraphNode';
 import Point from './GraphHelpers';
 import _ from 'lodash';
-import { start } from 'repl';
 
 const HORIZONTAL_DISTANCE = 65;
 const VERTICAL_DISTANCE = 45;
@@ -16,19 +17,18 @@ type Commit = {
   user: string;
 };
 
-type GitGraphProps = {
-  commitsById: string[];
-  commits: {
-    [key: string]: Commit;
-  };
-};
+type GitGraphProps = {};
 
 type pointCommitPair = {
   point: Point;
   commit: Commit;
 };
 
-export function GitGraph(props: GitGraphProps) {
+export function GitGraph({}: GitGraphProps) {
+  const dispatch = useDispatch();
+  dispatch(getCommitsAsync('.'));
+  const { commits, commitsStatus } = useSelector(selectCommits);
+
   const [nodePositions, setNodePositions] = useState<pointCommitPair[]>([]);
 
   function generateGraph() {
