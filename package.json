@@ -72,6 +72,6 @@
     "prettier": "^2.0.5",
     "regenerator-runtime": "^0.13.5",
     "typescript": "~3.8.2",
-    "webpack": "4.42.0"
+    "webpack": "5.94.0"
   }
 }
